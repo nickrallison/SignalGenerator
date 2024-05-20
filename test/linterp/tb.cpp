@@ -33,6 +33,7 @@ int main(int argc, char** argv, char** env) {
     int8_t i_high_signed = 127;
     int8_t i_low_signed = -128;
     uint16_t i_ctrl = 0x0000;
+    float tol = 1e-10;
 
     dut->i_high_signed = i_high_signed;
     dut->i_low_signed = i_low_signed;
@@ -41,15 +42,29 @@ int main(int argc, char** argv, char** env) {
         dut->i_ctrl = i_ctrl;
         dut->eval();
 
-        int out = dut->out;
-        out = sign_extend<24>(out);
 
-        std::cout << ((float) out) / (float) std::pow (2, 16) << "\n";
+
+        int dut_out = dut->out;
+        dut_out = sign_extend<24>(dut_out);
+        float dut_out_float = ((float) dut_out) / (float) std::pow (2, 16);
+        float expected = ((float) i_ctrl / (float) std::pow (2, 16)) * ((float) (i_high_signed - i_low_signed)) + ((float) i_low_signed);
+        float error = std::abs(dut_out_float - expected);
+        if (error > tol) {
+            std::cout << "Time: " << sim_time << std::endl;
+            std::cout << "Error: " << error << std::endl;
+            std::cout << "Expected: " << expected << std::endl;
+            std::cout << "Got: " << dut_out_float << std::endl;
+            std::cout << "i_ctrl: " << i_ctrl << std::endl;
+            std::cout << "i_high_signed: " << (int) i_high_signed << std::endl;
+            std::cout << "i_low_signed: " << (int) i_low_signed << std::endl;
+            exit(EXIT_FAILURE);
+        }
 
         m_trace->dump(sim_time);
         sim_time++;
         i_ctrl++;
     }
+    std::cout << "Test passed!" << std::endl;
 
     m_trace->close();
     delete dut;
