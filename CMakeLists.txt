@@ -4,6 +4,6 @@ project(signal_generator)
 include(cmake/functions.cmake)
 
 add_subdirectory(test/linterp)
-add_subdirectory(test/ram)
+add_subdirectory(test/signal_generator)
 
 add_subdirectory(design)

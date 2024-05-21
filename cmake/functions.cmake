@@ -2,7 +2,7 @@
 function(verilate TOP TB)
 	get_filename_component(FILE_NAME_WE ${TOP} NAME_WE)
 	get_filename_component(FILE_NAME ${TOP} NAME)
-	add_custom_target(${PROJECT_NAME} ALL
+	add_custom_target("V${FILE_NAME_WE}" ALL
 		DEPENDS "V${FILE_NAME_WE}.h"
 			"${TOP}"
 	)
@@ -11,7 +11,7 @@ function(verilate TOP TB)
 	add_custom_command(
 		OUTPUT "V${FILE_NAME_WE}.h"
 		COMMENT "Verilating ${FILE_NAME}"
-		COMMAND verilator -Wall --trace --cc ${TOP} --Mdir . --exe ${TB} --build > /dev/null
+		COMMAND verilator -Wall --trace --cc ${TOP} --Mdir . --exe ${TB} -I${CMAKE_SOURCE_DIR}/build/design -I${CMAKE_SOURCE_DIR}/design --build > /dev/null
 		DEPENDS 
 			${TOP} 
 			${TB}
