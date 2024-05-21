@@ -5,8 +5,8 @@
 #include <iostream>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
-#include "Vmulti_ram.h"
-#include "Vmulti_ram__Syms.h"
+#include "Vram.h"
+#include "Vram__Syms.h"
 
 #define MAX_SIM_TIME 1024
 vluint64_t sim_time = 0;
@@ -16,7 +16,7 @@ double sc_time_stamp() { return 0; }
 int main(int argc, char** argv, char** env) {
 
     // #### Setup VCD trace dump & DUT instance ####
-    Vmulti_ram *dut = new Vmulti_ram;
+    Vram *dut = new Vram;
     Verilated::traceEverOn(true);
     VerilatedVcdC *m_trace = new VerilatedVcdC;
     dut->trace(m_trace, 5);
@@ -71,8 +71,10 @@ int main(int argc, char** argv, char** env) {
         int correct_r_data[parallel_access] = {0};
         for (int i = 0; i < parallel_access; i++) {
             if (data[addr_vec[i]] != dut->r_data[i]) {
+                std::cout << "Time: " << sim_time << std::endl;
                 std::cout << "Error: data mismatch at address " << addr_vec[i] << "..." 
                 << unsigned(data[addr_vec[i]]) << " != " << unsigned(dut->r_data[i]) << std::endl;
+                exit(EXIT_FAILURE);
             }
         }
 
@@ -92,6 +94,7 @@ int main(int argc, char** argv, char** env) {
         
 
     }
+    std::cout << "Test passed!" << std::endl;
 
     m_trace->close();
     delete dut;

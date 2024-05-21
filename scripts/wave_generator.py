@@ -1,5 +1,6 @@
 import math
 import os
+import sys
 import sympy as sym
 
 if __name__ == "__main__":
@@ -18,7 +19,5 @@ if __name__ == "__main__":
         equation_value = math.ceil(max_value * equation.subs(sym.Symbol('x'), x_value).evalf())
         values.append(equation_value)
     
-    with open(os.path.join("build", "waveform.mem"), "w") as f:
-        for value in values:
-            f.write(f"{value}\n")
+    
     

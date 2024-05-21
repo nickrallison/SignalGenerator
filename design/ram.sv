@@ -1,4 +1,4 @@
-module multi_ram 
+module ram 
 #(ADDRESS_SIZE=8, DATA_SIZE=8, DATA_LEN=256, ACCESS_NUMBER=2) (
     input logic i_clk,
     input logic i_res,
@@ -38,26 +38,31 @@ end
 // assert (addr < DATA_LEN) else $error ("address space exceeded");
 // assert (2**ADDRESS_SIZE >= DATA_LEN) else $error ("ram too small");
 
-
-always_ff @(posedge i_clk ) begin
+logic [DATA_SIZE-1:0] temp_data [DATA_LEN-1:0];
+logic [DATA_SIZE-1:0] temp_r_data [ACCESS_NUMBER-1:0];
+always_latch begin
     if (i_res) begin
         for (int i = 0; i < DATA_LEN; i = i + 1) begin
-            data[i] <= '0;
+            temp_data[i] = '0;
         end
         for (int i = 0; i < ACCESS_NUMBER; i = i + 1) begin
-            r_data[i] <= '0;
+            temp_r_data[i] = '0;
         end
     end
     else begin
         for (int i = 0; i < ACCESS_NUMBER; i = i + 1) begin
             if (we[i]) begin
-                data[addr[i]] <= w_data[i];
+                temp_data[addr[i]] = w_data[i];
             end
             if (re[i]) begin 
-                r_data[i] <= data[addr[i]];
+                temp_r_data[i] = data[addr[i]];
             end
         end
-
     end
+end
+
+always_ff @(posedge i_clk ) begin
+    data <= temp_data;
+    r_data <= temp_r_data;
 end
 endmodule
