@@ -56,8 +56,8 @@ module signal_generator
         .WIDTH(DATA_SIZE),
         .PRECISION(PRECISION)
     ) u_linterp (
-        .i_high_signed(data1),
-        .i_low_signed(data2),
+        .i_high_signed(data2),
+        .i_low_signed(data1),
         .i_ctrl(frac),
         .out(data)
     );

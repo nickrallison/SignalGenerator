@@ -8,7 +8,7 @@
 #include "Vsignal_generator.h"
 #include "Vsignal_generator__Syms.h"
 
-#define MAX_SIM_TIME 0xFFFF
+#define MAX_SIM_TIME 0xFFFFFF
 vluint64_t sim_time = 0;
 
 template <size_t Bits, typename T>
@@ -30,39 +30,38 @@ int main(int argc, char** argv, char** env) {
     dut->trace(m_trace, 5);
     m_trace->open("wave/waveform.vcd");
 
-    int8_t i_high_signed = 127;
-    int8_t i_low_signed = -128;
-    uint16_t i_ctrl = 0x0000;
-    float tol = 1e-10;
 
     // dut->i_high_signed = i_high_signed;
     // dut->i_low_signed = i_low_signed;
-
+    dut->step_size=0x000000000008;
+    dut->i_res = 0;
+    dut->i_clk = 0;
+    dut->eval();
+    m_trace->dump(sim_time);
+    sim_time++;
+    dut->step_size=0x000000000008;
+    dut->i_res = 1;
+    dut->i_clk ^= 1;
+    dut->eval();
+    m_trace->dump(sim_time);
+    sim_time++;
+    dut->step_size=0x000000000008;
+    dut->i_res = 0;
+    dut->i_clk ^= 1;
+    dut->eval();
+    m_trace->dump(sim_time);
+    sim_time++;
     while (sim_time <= MAX_SIM_TIME) {
         // dut->i_ctrl = i_ctrl;
+        dut->step_size=0x000000000008;
+        dut->i_clk ^= 1;
         dut->eval();
-
-
-
-        // int dut_out = dut->out;
-        // dut_out = sign_extend<24>(dut_out);
-        // float dut_out_float = ((float) dut_out) / (float) std::pow (2, 16);
-        // float expected = ((float) i_ctrl / (float) std::pow (2, 16)) * ((float) (i_high_signed - i_low_signed)) + ((float) i_low_signed);
-        // float error = std::abs(dut_out_float - expected);
-        // if (error > tol) {
-        //     std::cout << "Time: " << sim_time << std::endl;
-        //     std::cout << "Error: " << error << std::endl;
-        //     std::cout << "Expected: " << expected << std::endl;
-        //     std::cout << "Got: " << dut_out_float << std::endl;
-        //     std::cout << "i_ctrl: " << i_ctrl << std::endl;
-        //     std::cout << "i_high_signed: " << (int) i_high_signed << std::endl;
-        //     std::cout << "i_low_signed: " << (int) i_low_signed << std::endl;
-        //     exit(EXIT_FAILURE);
-        // }
+        // int out = dut->data;
+        // out = sign_extend<24>(out);
+        // std::cout << "out: " << out << std::endl;
 
         m_trace->dump(sim_time);
         sim_time++;
-        i_ctrl++;
     }
     std::cout << "Test passed!" << std::endl;
 

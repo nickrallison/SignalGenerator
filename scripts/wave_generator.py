@@ -24,7 +24,7 @@ if __name__ == "__main__":
     fraction_of_1_period = 1
     
     ## Format from x = [0, 1], and y = [-1, 1]
-    equation = sym.sin(2 * sym.pi * sym.Symbol('x'))
+    equation = 0.49 * sym.sin(2 * sym.pi * sym.Symbol('x')) + 0.501
     max_value = 2**(data_width - 1) - 1
     
     values = []
@@ -32,9 +32,13 @@ if __name__ == "__main__":
         x_value = i / num_samples
         equation_value = math.ceil(max_value * equation.subs(sym.Symbol('x'), x_value).evalf())
         equation_value = twos_complement(equation_value, data_width)
-        values.append(equation_value)
+        binary = bin(equation_value)
+        binary = binary[2:]
+        binary = binary.rjust(data_width, '0')
+        values.append(binary)
+    values = list(reversed(values))
     
-    string = "{" + ", ".join([f"{data_width}'d" + str(x) for x in values]) + "}"
+    string = "{" + ", ".join([f"{data_width}'b" + str(x) for x in values]) + "}"
     with open(file_in, 'r') as f:
         contents = f.read()
     

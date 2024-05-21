@@ -4,3 +4,7 @@ mkdir -p build
 cd build
 cmake -GNinja ..
 ninja
+
+cd ..
+./build/test/signal_generator/Vsignal_generator
+scp wave/waveform.vcd nick@100.108.177.67:/home/nick/Downloads/
